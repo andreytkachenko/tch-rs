@@ -98,7 +98,7 @@ fn prepare_libtorch_dir() -> PathBuf {
             fs::create_dir(&libtorch_dir).unwrap_or_default();
             let libtorch_url = match os.as_str() {
                 "linux" => format!(
-                    "https://download.pytorch.org/libtorch/{}/libtorch-cxx11-abi-shared-with-deps-{}%2Bcpu.zip",
+                    "https://download.pytorch.org/libtorch/{}/libtorch-cxx11-abi-static-with-deps-{}%2Bcpu.zip",
                     device, TORCH_VERSION
                 ),
                 "macos" => format!(
@@ -166,7 +166,7 @@ fn cmake<P: AsRef<Path>>(libtorch: P) {
 
     println!("cargo:rustc-link-search=native={}", dst.display());
     println!("cargo:rustc-link-lib=static=tch");
-    println!("cargo:rustc-link-lib=stdc++");
+    println!("cargo:rustc-link-lib=static=stdc++");
 }
 
 fn main() {
@@ -182,12 +182,12 @@ fn main() {
         make(&libtorch)
     }
 
-    println!("cargo:rustc-link-lib=torch");
-    println!("cargo:rustc-link-lib=c10");
+    println!("cargo:rustc-link-lib=static=torch");
+    println!("cargo:rustc-link-lib=static=c10");
 
     let target = env::var("TARGET").unwrap();
 
     if !target.contains("msvc") && !target.contains("apple") {
-        println!("cargo:rustc-link-lib=gomp");
+        println!("cargo:rustc-link-lib=static=gomp");
     }
 }
